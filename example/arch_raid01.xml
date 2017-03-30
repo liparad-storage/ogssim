@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+Parameter file for architecture
+-->
+<architecture>
+	<buses nbbuses="3">
+		<bus name="B0" nbports="17" bandwidth="640" type="SCSI" />
+		<bus name="B1" nbports="17" bandwidth="640" type="SCSI" />
+		<bus name="B2" nbports="17" bandwidth="640" type="SCSI" />
+	</buses>
+	<system nbtiers="1" bus="B0">
+		<tier nbvolumes="1" bus="B1">
+			<volume nbdevices="10" bus="B2">
+				<config type="RAID01" stripeunitsize="8388608" buffersize="32" />
+				<device file="example/hdd_hitachi_A7K1000.xml" />
+			</volume>
+		</tier>
+	</system>
+</architecture>

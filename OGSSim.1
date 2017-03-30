@@ -1,0 +1,548 @@
+.\" Manpage for OGSSim
+.\" Contact sebastien.gougeaud@uvsq.fr to correct errors or typos.
+.TH OGSSim 7 "1 October 2016" "1.2" OGSSim man page"
+.SH NAME
+.B OGSSim
+\- simulate a storage system
+.SH SYNOPSIS
+.B OGSSim
+configuration_file
+.SH DESCRIPTION
+Simulate a multi-tiered data storage system by launching a set of requests. Both the system and the request set are described in input files. The program generates results in output files.
+.SH OPTIONS
+.TP
+.B "configuration_file"
+Use the indicated configuration file for OGSSim. This file is in
+.B XML
+format and contains paths of input and output files, ZMQ information, GLog information and the size of the subrequest array.
+.PP
+.RS
+The file is composed of module sections, a path section and a general one.
+.PP
+.TP
+.B <path>
+This section concerns the path of the input and output files.
+.RS
+.PP
+The requested tags are
+.B <workloadfile>, <hardwarefile>, <resultfile>
+and
+.B <subresultfile>
+.RE
+.TP
+.B <general>
+This section concerns the whole simulator. It contains information about GLog. The
+.B <log>
+tag describes:
+.RS
+.PP
+.B - mlvl:
+minimum log level (from 0 for DEBUG to 4 for FATAL)
+.PP
+.B - file:
+log file
+.RE
+.TP
+.B <workload>, <hardware>, <preproc>, <volumedriver>, <devicedriver>, <execution>, <performance>
+.RS
+All the modules of the simulator need parameters to use ZMQs and communicate with the others. The
+.B <zeromq>
+tag describes:
+.PP
+.B - intr:
+interlocutor module
+.PP
+.B - prot:
+socket protocol (tcp as default value)
+.PP
+.B - addr:
+socket address (* for receiving queues, and localhost for sending queues as default values, in local mode)
+.PP
+.B - port:
+socket port (must be different for each ZMQ)
+.RE
+.TP
+.B <workload>
+.RS
+This module needs supplementary information for the creation of the request structure (subreq tag) and the size of a storage data unit (reqdut tag). The
+.B <subreq>
+tag describes:
+.PP
+.B - bsiz:
+subrequest array size
+.PP
+The
+.B <reqdut>
+tag describes:
+.PP
+.B - size:
+storage data unit size
+.RE
+.TP
+.B <execution>
+.RS
+This module needs information for the computation model used for bus simulation. The
+.B <cmbus>
+tag describes:
+.PP
+.B - type:
+computation model type (default or advanced)
+.RE
+.TP
+.B <performance>
+.RS
+This module needs information for the creation of the output graph requests. The
+.B <graph>
+tag describes:
+.PP
+.B - type:
+graph type (devbehavior, busbehavior, reqpercentile or fullreqpercentile)
+.PP
+.B - output:
+output file name
+.PP
+.B - value (resp. volume, bus, size or size):
+graph creation value (resp. targeted volume, targeted bus, number of percentiles and number of percentiles)
+.RE
+.RE
+.TP
+.B "-t file"
+Use the indicated file as the trace file. The trace file is in
+.B RAW
+format and contains 4 mandatory fields and between 0 and 2 optional fields for each request. The format A gets 0 optional fiels, the B gets 1 and the C gets 2. The following sections describes the mandatory fields:
+.RS
+.RS
+.PP
+.B timestamp:
+arrival date of the request
+.PP
+.B type:
+request type (0 for read and 1 for write)
+.PP
+.B logical address:
+logical start address of the data targeted by the request in the simulated system, in data units
+.PP
+.B size:
+request size in data units
+.RE
+.PP
+The following is the optional field used in the format B.
+.RS
+.PP
+.B color:
+group id of the request (optional field)
+.RE
+.PP
+The two last fields are used in the format C.
+.RS
+.PP
+.B host id:
+id of the host which sends the request to the system (optional field)
+.PP
+.B process id:
+id of the process which creates the request (optional field)
+.RE
+.RE
+.TP
+.B "-a file"
+Use the indicated file as the hardware configuration file. This file is in
+.B XML
+format and is composed of 2 main sections in the 
+.B <architecture>
+tag:
+.PP
+.RS
+The
+.B <buses>
+tag describes the set of buses used in the system. The tag gets the parameter
+.B nbbuses
+which indicates the number of buses contained in the system. Each bus is then describes with the
+.B <bus>
+tag which contains the following parameters:
+.RS
+.TP
+.B name:
+bus name, used to link the system components with the used bus
+.PP
+.B nbports:
+number of ports available for this bus
+.PP
+.B bandwith:
+bus bandwidth in GB.s-1
+.PP
+.B type:
+bus type (ethernet, SCSI, USB, etc.)
+.RE
+.PP
+The
+.B <system>
+tag describes the components of the system, in a hierarchical way (tiers, volumes & devices). The
+.B <system>
+tag gets two parameters,
+.B nbtiers
+and
+.B bus
+which respectively give the number of tiers of the system and the name of the host-tier bus.
+.PP
+The
+.B <tier>
+tag gets three parameters,
+.B nbvolumes, 
+.B bus
+and
+.B buffersize
+which respectively give the number of volumes of the tier, the name of the tier-volume bus and the
+buffer size in MB. The
+.B <tier>
+tag can contains both
+.B <volume>
+and
+.B <decraid>
+tags.
+.PP
+The
+.B <volume>
+tag also gets three parameters,
+.B nbdevices/nblogdevices
+and
+.B bus
+which respectively give the number of devices of the volume and the name of the volume-device bus. If the volume is a part of a declustered RAID volume, the number of devices is given by the parameter
+.B nblogdevices
+instead of
+.B nbdevices.
+The
+.B <volume>
+tag contained two other tags:
+.RS
+.TP
+.B <config>
+.RS
+This tag contains a number of parameters depending on the type of configuration used. Here the description of those parameters:
+.RS
+.TP
+.B type:
+configuration type (JBOD, RAID1, RAID01 or RAIDNP)
+.PP
+.B buffersize:
+buffer size (in MB),
+.B mandatory when using the advanced computation model of buses with volumes other than JBOD
+.PP
+.B stripeunitsize:
+stripe unit size, in data units [RAID01 and RAIDNP only]
+.PP
+.B nbpardisks:
+number of parity disks [RAIDNP only]
+.PP
+.B decl:
+declustering type (no, parity, data) [RAIDNP only]
+.PP
+.B sreqoptim:
+subrequest optimization, capacity of fuse requests which targets contiguous data spaces (on, off) [RAIDNP only]
+.PP
+.B parityread:
+parity read feature, capacity of requesting a parity check on a read request (on, off) [RAIDNP only]
+.RE
+.RE
+.PP
+.B <device>
+.RS
+This tag only gets the parameter
+.B file
+which indicates the parameter file of the device used in the system.
+.RE
+.RE
+.PP
+The
+.B <decraid>
+tag contains the following parameters:
+.RS
+.TP
+.B type:
+type of mapping scheme algorithm
+.RE
+.RS
+.TP
+.B nbsubvol:
+number of volumes contained in the declustered RAID
+.RE
+.RS
+.TP
+.B nbdevices:
+total number of physical devices
+.RE
+.RS
+.TP
+.B nbspare:
+number of spare devices
+.RE
+.RS
+.TP
+.B decsize:
+block size, in data units
+.RE
+.RS
+.TP
+.B bus:
+name of the volume-device bus
+.RE
+.RS
+.TP
+.B buffersize:
+buffer size in MB
+.RE
+.PP
+The
+.B <decraid>
+tag contains two kinds of tags: the
+.B <device>
+tag which describes the device used for the declustered RAID and the
+.B <volume>
+tag for each subvolume contained in the declustered RAID.
+.PP
+The device file format depends on the described device type. The current version of OGSSim supports two different kinds of device: HDD & SSD. The device type is given by the
+.B type
+parameter of the
+.B <device>
+tag. Each disk is composed of 5 sections:
+.B <information>, <geometry>, <technology>, <performance>
+and
+.B <reliability>.
+.TP
+.B HDD
+.RS
+.B <information>
+.RS
+.B <name>:
+device name [optional]
+.PP
+.B <capacity>:
+device capacity in GB
+.PP
+.B <producer>:
+device producer [optional]
+.PP
+.B <year>:
+device year of production [optional]
+.RE
+.PP
+.B <geometry>
+.RS
+.B <sectorsize>:
+sector size
+.PP
+.B <sectorsbytrack>:
+number of sectors by track
+.PP
+.B <tracksbyplatter>:
+number of tracks by platter
+.PP
+.B <nbplatters>:
+number of platters
+.PP
+.B <dataheads>:
+number of data heads
+.RE
+.PP
+.B <technology>
+.RS
+.B <ata>:
+ATA information
+.RS
+.B extended:
+48-bit command set enabled (on, off) [optional]
+.PP
+.B ncq
+native command queue set enabled (on, off) [optional]
+.PP
+.B ncqdepth
+depth of command queue [optional]
+.RE
+.PP
+.B <sata>:
+SATA information
+.RS
+.B bandwidth
+maximum available bandwidth in MB.s-1
+.RE
+.RE
+.PP
+.B <performance>
+.RS
+.B <minrseek>:
+minimum read seek time in ms
+.PP
+.B <avgrseek>:
+average read seek time in ms
+.PP
+.B <maxrseek>:
+maximum read seek time in ms
+.PP
+.B <minwseek>:
+minimum write seek time in ms
+.PP
+.B <avgwseek>:
+average write seek time in ms
+.PP
+.B <maxwseek>:
+maximum write seek time in ms
+.PP
+.B <mediatransferrate>:
+media transfer rate in MB.s-1
+.PP
+.B <rotspeed>:
+rotational speed in rpm
+.PP
+.B <buffersize>:
+buffer size in MB
+.RE
+.PP
+.B <reliability>
+.RS
+.B <mttf>
+mean time until failure in hours [optional]
+.RE
+.RE
+.TP
+.B SSD
+.RS
+.B <information>
+.RS
+.B <name>:
+device name [optional]
+.PP
+.B <capacity>:
+device capacity in GB
+.PP
+.B <arch>:
+device architecture (SLC, MLC, TLC) [optional]
+.PP
+.B <producer>:
+device producer [optional]
+.PP
+.B <year>:
+device year of production [optional]
+.RE
+.PP
+.B <geometry>
+.RS
+.B <pagesize>:
+page size
+.PP
+.B <pagesbyblock>:
+number of pages by block
+.PP
+.B <blocksbydie>:
+number of blocks by die
+.PP
+.B <nbdies>:
+number of dies
+.RE
+.PP
+.B <technology>:
+.RS
+.B <ata>:
+ATA information
+.RS
+.B extended:
+48-bit command set enabled (on, off) [optional]
+.PP
+.B ncq
+native command queue set enabled (on, off) [optional]
+.PP
+.B ncqdepth
+depth of command queue [optional]
+.RE
+.PP
+.B <sata>:
+SATA information
+.RS
+.B bandwidth
+maximum available bandwidth in MB.s-1
+.RE
+.RE
+.PP
+.B <performance>
+.RS
+.B <randread>:
+random read access, the
+.B size
+parameter indicates the request instruction size and the
+.B unit
+parameter indicates the measure unit (iops of mbps)
+.PP
+.B <randwrite>:
+random write access in iops, the
+.B size
+parameter indicates the request instruction size
+ and the
+.B unit
+parameter indicates the measure unit (iops of mbps)
+.PP
+.B <seqread>:
+sequential read access, the
+.B unit
+parameter indicates the measure unit (iops of mbps) in MB.s-1
+.PP
+.B <seqwrite>:
+sequential write access, the
+.B unit
+parameter indicates the measure unit (iops of mbps) in MB.s-1
+.PP
+.B <erase>:
+erase time in ms
+.PP
+.B <buffersize>:
+buffer size in MB
+.RE
+.PP
+.B <reliability>
+.RS
+.B <nberase>
+number of erase of one block
+.PP
+.B <mtbf>
+mean time before failure in hours [optional]
+.RE
+.RE
+.RE
+.TP
+.B "-r file"
+Create the result file at the indicated path. The file contains 5 fields for each request:
+.RS
+.RS
+.PP
+.B id:
+request index
+.PP
+.B timestamp:
+arrival date of the request
+.PP
+.B type:
+request type (0 for read, 1 for write)
+.PP
+.B volume index:
+targeted volume index
+.PP
+.B device index:
+targeted device index if the request is not decomposed, '-' if it is
+.RE
+.RE
+.TP
+.B "-s file"
+Create the subresult file at the indicated path. If the file is empty, it means that there was no decomposition during the simulation. This file contains 4 fields for each subrequest:
+.RS
+.RS
+.PP
+.B parent id:
+parent request index
+.PP
+.B timestamp:
+arrival date of the request
+.PP
+.B type:
+request type (0 for read, 1 for write)
+.PP
+.B device index:
+targeted device index
+.RE
+.RE

@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+Parameter file for ... ... ... ...
+Blank parameter file
+-->
+<device type="hdd">
+	<information>
+		<name>A7K1000</name>
+		<capacity>500</capacity> <!-- in GBytes -->
+		<producer>Hitachi</producer>
+		<year>2007</year>
+	</information>
+	<geometry>
+		<sectorsize>512</sectorsize> <!-- 512/4096 -->
+		<sectorsbytrack>1380</sectorsbytrack>
+		<tracksbyplatter>117967</tracksbyplatter>
+		<nbplatters>6</nbplatters>
+		<dataheads>6</dataheads>
+	</geometry>
+	<technology>
+		<!-- ata available parameters:
+				- extended [on/off]: 48-bit command set
+				- ncq [on/off]: native command queue set
+				- ncqdepth [int]: depth of command queue (16 by default) -->
+		<ata extended="on" ncq="on" ncqdepth="16" />
+		<!-- sata available parameters:
+				- bandwidth [int]: in MB.s-1
+				- revision [float] -->
+		<sata bandwidth="3000" revision="2.5" />
+	</technology>
+	<performance>
+		<minrseek>1.1</minrseek>
+		<avgrseek>8.7</avgrseek>
+		<maxrseek>15.2</maxrseek>
+		<minwseek>1.1</minwseek>
+		<avgwseek>8.7</avgwseek>
+		<maxwseek>15.2</maxwseek>
+		<mediatransferrate>120</mediatransferrate> <!-- in MB.s-1 -->
+		<rotspeed>7200</rotspeed> <!-- in rpm -->
+		<buffersize>32</buffersize> <!-- in MB -->
+	</performance>
+	<reliability>
+		<mttf></mttf> <!-- in hours -->
+	</reliability>
+</device>

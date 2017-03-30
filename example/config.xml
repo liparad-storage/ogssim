@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+Parameter file for ZMQ bindings
+-->
+<config>
+	<path>
+		<workloadfile>example/trace.data</workloadfile>
+		<hardwarefile>example/arch_draid.xml</hardwarefile>
+		<resultfile>example/result.data</resultfile>
+		<subresultfile>example/sres.data</subresultfile>
+	<general>
+		<log mlvl="0" file="example/log_" />
+	</general>
+	<event>
+		<zeromq intr="preproc" prot="tcp" addr="localhost" port="5559" />
+	</event>
+	<workload>
+		<zeromq intr="preproc" prot="tcp" addr="localhost" port="5555" />
+		<subreq bsiz="50000" />
+		<reqdut size="512" />
+	</workload>
+	<hardware>
+		<zeromq intr="preproc" prot="tcp" addr="localhost" port="5556" />
+	</hardware>
+	<preproc>
+		<zeromq intr="workload" prot="tcp" addr="*" port="5555" />
+		<zeromq intr="hardware" prot="tcp" addr="*" port="5556" />
+		<zeromq intr="event" prot="tcp" addr="*" port="5559" />
+		<zeromq intr="execution" prot="tcp" addr="localhost" port="5557" />
+        <zeromq intr="performance" prot="tcp" addr="localhost" port="5560" />
+		<zeromq intr="volumedriver" prot="tcp" addr="localhost" port="5600" />
+	</preproc>
+	<volumedriver>
+		<zeromq intr="devicedriver" prot="tcp" addr="localhost" port="6000" />
+		<zeromq intr="execution" prot="tcp" addr="localhost" port="5558" />
+		<zeromq intr="reply" prot="tcp" addr="*" port="5800" />
+	</volumedriver>
+	<devicedriver>
+		<zeromq intr="execution" prot="tcp" addr="localhost" port="5558" />
+		<zeromq intr="reply" prot="tcp" addr="*" port="7000" />
+	</devicedriver>
+	<execution>
+		<zeromq intr="preproc" prot="tcp" addr="*" port="5557" />
+		<zeromq intr="devicedriver" prot="tcp" addr="*" port="5558" />
+		<zeromq intr="volreply" prot="tcp" addr="localhost" port="5800" />
+		<zeromq intr="performance" prot="tcp" addr="localhost" port="5561" />
+		<zeromq intr="devreply" prot="tcp" addr="localhost" port="7000" />
+		<cmbus type="advanced" />
+	</execution>
+	<performance>
+        <zeromq intr="preproc" prot="tcp" addr="*" port="5560" />
+        <zeromq intr="execution" prot="tcp" addr="*" port="5561" />
+		<graph type="reqpercentile" size="20" output="example/output.png" />
+    </performance>
+</config>

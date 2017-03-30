@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<architecture>
+	<buses nbbuses="3">
+		<bus name="B0" nbports="17" bandwidth="640" type="SCSI" />
+		<bus name="B1" nbports="17" bandwidth="640" type="SCSI" />
+		<bus name="B2" nbports="17" bandwidth="640" type="SCSI" />
+	</buses>
+	<system nbtiers="1" bus="B0">
+		<tier nbvolumes="1" bus="B1">
+			<decraid type="sd2s" nbsubvol="2" nbdevices="15" nbspare="2" decsize="16384" bus="B2" buffersize="64">
+				<device file="example/hdd_hitachi_A7K1000.xml" />
+				<volume nblogdevices="4" bus="B2">
+					<config type="RAID01" stripeunitsize="16384" />
+				</volume>
+				<volume nblogdevices="9" bus="B2">
+					<config type="RAIDNP" stripeunitsize="16384" decl="parity" nbpardisks="1" sreqoptim="no" parityread="no" />
+				</volume>
+			</decraid>
+		</tier>
+	</system>
+</architecture>

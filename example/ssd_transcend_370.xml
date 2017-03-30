@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+Parameter file
+Time in ms
+Capacity in gigabytes
+-->
+<device type="ssd">
+	<information>
+		<name>Transcend SSD370</name>
+		<capacity>256</capacity>
+		<arch>MLC</arch>
+		<producer>Transcend</producer>
+		<year>2015</year>
+	</information>
+	<geometry>
+		<pagesize>4096</pagesize>
+		<pagesbyblock>512</pagesbyblock>
+		<blocksbydie>2048</blocksbydie>
+		<nbdies>16</nbdies>
+	</geometry>
+	<technology>
+		<ata extended="off" ncq="on" security="off" smart="off" />
+		<sata bandwidth="6000000000" revision="3.0" />
+		<advcommands />
+	</technology>
+	<performance>
+		<randread unit="iops" size="4096">70000</randread>
+		<randwrite unit="iops" size="4096">70000</randwrite>
+		<seqread unit="mbps">560</seqread>
+		<seqwrite unit="mbps">320</seqwrite>
+		<erase>3.8</erase>
+		<buffersize>32</buffersize>
+	</performance>
+	<reliability>
+		<nberase>3000</nberase>
+	</reliability>
+</device>

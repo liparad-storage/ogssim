@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+Parameter file for architecture
+-->
+<architecture>
+	<buses nbbuses="7">
+		<bus name="B0" nbports="17" bandwidth="640" type="SCSI" />
+		<bus name="B1" nbports="17" bandwidth="640" type="SCSI" />
+		<bus name="B2" nbports="17" bandwidth="640" type="SCSI" />
+		<bus name="B3" nbports="17" bandwidth="640" type="SCSI" />
+		<bus name="B4" nbports="17" bandwidth="640" type="SCSI" />
+		<bus name="B5" nbports="17" bandwidth="640" type="SCSI" />
+		<bus name="B6" nbports="17" bandwidth="640" type="SCSI" />
+	</buses>
+	<system nbtiers="1" bus="B0">
+		<tier nbvolumes="5" bus="B1">
+			<volume nbdevices="2" bus="B2">
+				<config type="RAID1" buffersize="64" />
+                <device file="example/hdd_hitachi_A7K1000.xml" />
+<!--                <device file="example/ssd_transcend_370.xml" /> -->
+			</volume>
+			<volume nbdevices="2" bus="B3">
+				<config type="RAID1" buffersize="64" />
+                <device file="example/hdd_hitachi_A7K1000.xml" />
+<!--                <device file="example/ssd_transcend_370.xml" /> -->
+			</volume>
+			<volume nbdevices="2" bus="B4">
+				<config type="RAID1" buffersize="64" />
+                <device file="example/hdd_hitachi_A7K1000.xml" />
+<!--                <device file="example/ssd_transcend_370.xml" /> -->
+			</volume>
+			<volume nbdevices="2" bus="B5">
+				<config type="RAID1" buffersize="64" />
+                <device file="example/hdd_hitachi_A7K1000.xml" />
+<!--                <device file="example/ssd_transcend_370.xml" /> -->
+			</volume>
+			<volume nbdevices="2" bus="B6">
+				<config type="RAID1" buffersize="64" />
+                <device file="example/hdd_hitachi_A7K1000.xml" />
+<!--                <device file="example/ssd_transcend_370.xml" /> -->
+			</volume>
+		</tier>
+	</system>
+</architecture>
