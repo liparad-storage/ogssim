@@ -3,7 +3,7 @@ DOCDIR=docs
 DOCFILE=$(DOCDIR)/Doxyfile
 LIBDIR=lib/libzmq
 
-.PHONY: all mrproper clean docs lib debug release
+.PHONY: all mrproper clean debug release
 
 all: debug
 
@@ -16,9 +16,6 @@ release:
 	cd src; cmake ./ -DCMAKE_BUILD_TYPE=Release; cd ..;
 	$(MAKE) -C src
 	cp src/${EXEC} ${EXEC}
-
-docs:
-	doxygen $(DOCFILE)
 
 clean:
 	$(MAKE) -C src clean
